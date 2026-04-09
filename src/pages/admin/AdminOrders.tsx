@@ -241,7 +241,7 @@ export default function AdminOrders() {
                 <button 
                   className="btn btn-primary btn-lg w-full"
                   onClick={() => {
-                    updateStatus(approvalModal.order!, 'completed', `${approvalModal.order.product_details?.category}_order`);
+                    updateStatus(approvalModal.order!, 'completed', `${approvalModal.order?.product_details?.category}_order`);
                     setApprovalModal({ open: false, order: null });
                   }}
                 >
