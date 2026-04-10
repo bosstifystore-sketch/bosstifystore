@@ -105,10 +105,11 @@ export default function CheckoutModal({ isOpen, amount, product, userProfileUrl,
     } else {
       // If coupon used, increment used_count
       if (appliedCoupon) {
-        await supabase.rpc('increment_coupon_usage', { coupon_id: appliedCoupon.id }).catch(() => {
-           // Fallback if RPC doesn't exist, just try direct update
-           supabase.from('coupons').update({ used_count: appliedCoupon.used_count + 1 }).eq('id', appliedCoupon.id).then()
-        })
+        const { error: rpcError } = await supabase.rpc('increment_coupon_usage', { coupon_id: appliedCoupon.id })
+        if (rpcError) {
+          // Fallback if RPC doesn't exist, just try direct update
+          await supabase.from('coupons').update({ used_count: appliedCoupon.used_count + 1 }).eq('id', appliedCoupon.id)
+        }
       }
       setSuccess(true)
       setTimeout(() => navigate('/orders'), 2000)
