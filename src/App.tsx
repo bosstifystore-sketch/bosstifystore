@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/Navbar'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -27,10 +28,26 @@ import AdminOrders from './pages/admin/AdminOrders'
 import AdminTickets from './pages/admin/AdminTickets'
 import AdminCoupons from './pages/admin/AdminCoupons'
 
+// Component to handle Supabase magic link hashes (like password recovery)
+function AuthHashHandler() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    // If the hash contains type=recovery, forcefully redirect to /reset-password
+    // preserving the hash so Supabase can read the token there.
+    if (window.location.hash && window.location.hash.includes('type=recovery')) {
+      navigate('/reset-password' + window.location.hash, { replace: true })
+    }
+  }, [navigate])
+
+  return null
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <AuthHashHandler />
         <Routes>
           {/* USER ROUTES — with Navbar */}
           <Route path="/" element={<><Navbar /><Home /></>} />
@@ -91,3 +108,4 @@ export default function App() {
     </BrowserRouter>
   )
 }
+
